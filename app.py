@@ -60,7 +60,7 @@ def generar_diploma():
                         for paragraph in shape.text_frame.paragraphs:
                             for run in paragraph.runs:
                                 if nombre in run.text:  # Aplicar estilo solo al nombre
-                                    run.font.name = "Allura"  # Tipografía Allura
+                                    run.font.name = "ITZ zapf chanc"  # Tipografía Allura
                                     run.font.size = Pt(40)    # Tamaño 60
                             paragraph.alignment = PP_ALIGN.CENTER  # Centrar texto
 
