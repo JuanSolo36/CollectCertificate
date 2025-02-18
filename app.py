@@ -61,7 +61,7 @@ def generar_diploma():
                             for run in paragraph.runs:
                                 if nombre in run.text:  # Aplicar estilo solo al nombre
                                     run.font.name = "Allura"  # Tipografía Allura
-                                    run.font.size = Pt(60)    # Tamaño 60
+                                    run.font.size = Pt(40)    # Tamaño 60
                             paragraph.alignment = PP_ALIGN.CENTER  # Centrar texto
 
         # Reemplazar las estrellas en el PPTX con imágenes

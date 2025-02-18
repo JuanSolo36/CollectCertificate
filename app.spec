@@ -5,7 +5,7 @@ a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
-    datas=[('templates/*', 'templates'), ('static/*', 'static'), ('Certificado Diploma Premio.pptx', '.'), ('static/estrella.png', 'static')],
+    datas=[('templates/*', 'templates'), ('static/*', 'static'), ('Certificado Diploma Premio.pptx', '.'), ('static/estrella.png', 'static'), ('static/logo2.png', 'static')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
