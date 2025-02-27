@@ -50,7 +50,7 @@ missing module named android - imported by setuptools._vendor.platformdirs.andro
 missing module named importlib_resources - imported by setuptools._vendor.jaraco.text (optional)
 missing module named _manylinux - imported by packaging._manylinux (delayed, optional), setuptools._vendor.packaging._manylinux (delayed, optional), setuptools._vendor.wheel.vendored.packaging._manylinux (delayed, optional)
 missing module named trove_classifiers - imported by setuptools.config._validate_pyproject.formats (optional)
-missing module named pyimod02_importers - imported by C:\Users\DPT SISTEMAS\Desktop\PROGRAMAS\AutoName\.venv\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgutil.py (delayed), C:\Users\DPT SISTEMAS\Desktop\PROGRAMAS\AutoName\.venv\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgres.py (delayed)
+missing module named pyimod02_importers - imported by C:\Users\DPT Sistemas\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgutil.py (delayed), C:\Users\DPT Sistemas\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgres.py (delayed)
 missing module named _suggestions - imported by traceback (delayed, optional)
 missing module named htmlentitydefs - imported by lxml.html.soupparser (optional)
 missing module named BeautifulSoup - imported by lxml.html.soupparser (optional)

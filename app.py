@@ -1,14 +1,14 @@
 from flask import Flask, request, send_file, jsonify, render_template
 from flask_cors import CORS
 from pptx import Presentation
-from pptx.util import Inches, Pt
+from pptx.util import Pt
 from pptx.enum.text import PP_ALIGN
 import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Configura las rutas relativas para plantillas y archivos estáticos
+# Configuración de rutas
 app.template_folder = os.path.join(os.path.dirname(__file__), "templates")
 app.static_folder = os.path.join(os.path.dirname(__file__), "static")
 
@@ -27,77 +27,97 @@ def generar_diploma():
         print("Recibido JSON:", data)
 
         nombre = data.get("nombre", "Nombre")
-        estrellas = data.get("estrellas", 0)  # Evita que sea None
+        estrellas = data.get("estrellas", 0)
+        mes = data.get("mes", "Mes")
+        fecha = data.get("fecha", "Fecha")
 
         if estrellas is None or estrellas == "":
-            estrellas = 0  # Asegurar que siempre sea un número
+            estrellas = 0  # Asegurar que siempre sea un número válido
+        estrellas = int(estrellas)
 
-        estrellas = int(estrellas)  # Convertir a entero
-        print("Nombre:", nombre)
-        print("Estrellas:", estrellas)
+        print(f"Nombre: {nombre}, Estrellas: {estrellas}, Mes: {mes}, Fecha: {fecha}")
 
-        # Verificar que la plantilla existe
+        # Verificar la existencia de la plantilla y la imagen de la estrella
         if not os.path.exists(PPTX_TEMPLATE):
             print("❌ ERROR: El archivo PPTX no se encontró")
             return jsonify({"error": "El archivo PPTX no se encontró"}), 500
 
-        # Verificar que la imagen de la estrella existe
         if not os.path.exists(IMAGEN_ESTRELLA):
             print("❌ ERROR: La imagen de la estrella no se encontró")
             return jsonify({"error": "La imagen de la estrella no se encontró"}), 500
 
         prs = Presentation(PPTX_TEMPLATE)
 
-        # Reemplazar el nombre en el PPTX y aplicar estilo
+        # Reemplazo de texto en la presentación
         for slide in prs.slides:
             for shape in slide.shapes:
                 if shape.has_text_frame:
                     if "[Nombre]" in shape.text:
-                        # Reemplazar el marcador con el nombre
-                        shape.text = nombre
+                        shape.text = shape.text.replace("[Nombre]", nombre)
 
-                        # Aplicar estilo solo al nombre
+                        # Aplicar estilos al nombre
                         for paragraph in shape.text_frame.paragraphs:
                             for run in paragraph.runs:
-                                if nombre in run.text:  # Aplicar estilo solo al nombre
-                                    run.font.name = "TeXGyreChorus"  # Tipografía Allura
-                                    run.font.size = Pt(40)    # Tamaño 60
-                            paragraph.alignment = PP_ALIGN.CENTER  # Centrar texto
+                                if nombre in run.text:
+                                    run.font.name = "Verdana"
+                                    run.font.size = Pt(36)
+                            paragraph.alignment = PP_ALIGN.CENTER
 
-        # Reemplazar las estrellas en el PPTX con imágenes
+                    if "[Mes]" in shape.text:
+                        shape.text = shape.text.replace("[Mes]", mes)
+
+                        # Aplicar estilos al mes
+                        for paragraph in shape.text_frame.paragraphs:
+                            paragraph.alignment = PP_ALIGN.CENTER
+                            for run in paragraph.runs:
+                                if mes in run.text:
+                                    run.font.name = "Tahoma"
+                                    run.font.size = Pt(16)
+                                    
+
+                    if "[Fecha]" in shape.text:
+                        shape.text = shape.text.replace("[Fecha]", fecha)
+                        # Aplicar estilos a la fecha
+                        for paragraph in shape.text_frame.paragraphs:
+                            paragraph.alignment = PP_ALIGN.CENTER
+                            for run in paragraph.runs:
+                                if fecha in run.text:
+                                    run.font.name = "Tahoma"
+                                    run.font.size = Pt(16)
+
+                    if "[Cartera]" in shape.text:
+                        shape.text = shape.text.replace("[Cartera]", "Banco de Occidente")
+                        for paragraph in shape.text_frame.paragraphs:
+                            paragraph.alignment = PP_ALIGN.CENTER
+                            for run in paragraph.runs:
+                                if fecha in run.text:
+                                    run.font.name = "Tahoma"
+                                    run.font.size = Pt(16)
+                                    run.font.bold = True
+
+        # Reemplazo de estrellas con imágenes
         for slide in prs.slides:
             for shape in slide.shapes:
-                if shape.has_text_frame:
-                    if "[ESTRELLAS]" in shape.text:
-                        # Eliminar el marcador de estrellas
-                        shape.text = ""
+                if shape.has_text_frame and "[ESTRELLAS]" in shape.text:
+                    shape.text = ""  # Eliminar el marcador de estrellas
 
-                        # Obtener la posición y dimensiones de la forma
-                        left = shape.left
-                        top = shape.top
-                        width = shape.width
+                    # Posición y tamaño de las estrellas
+                    left, top, width = shape.left, shape.top, shape.width
+                    estrella_width, estrella_height = Pt(18), Pt(18)  # Tamaño en puntos
+                    espacio_entre_estrellas = Pt(10)
+                    espacio_total = (estrella_width * estrellas) + (espacio_entre_estrellas * (estrellas - 1))
+                    left_inicio = left + (width - espacio_total) / 2
 
-                        # Ajustar el tamaño de las estrellas
-                        estrella_width = Inches(0.3)  # Ancho más pequeño
-                        estrella_height = Inches(0.3)  # Alto más pequeño
-
-                        # Calcular el espacio total que ocuparán las estrellas
-                        espacio_entre_estrellas = Inches(0.2)  # Espacio entre estrellas
-                        espacio_total = (estrella_width * estrellas) + (espacio_entre_estrellas * (estrellas - 1))
-
-                        # Calcular la posición inicial para centrar las estrellas
-                        left_inicio = left + (width - espacio_total) / 2
-
-                        # Insertar las imágenes de las estrellas
-                        for i in range(estrellas):
-                            estrella_left = left_inicio + (i * (estrella_width + espacio_entre_estrellas))
-                            slide.shapes.add_picture(
-                                IMAGEN_ESTRELLA,
-                                estrella_left,
-                                top,
-                                width=estrella_width,
-                                height=estrella_height
-                            )
+                    # Insertar las imágenes de las estrellas
+                    for i in range(estrellas):
+                        estrella_left = left_inicio + (i * (estrella_width + espacio_entre_estrellas))
+                        slide.shapes.add_picture(
+                            IMAGEN_ESTRELLA,
+                            estrella_left,
+                            top,
+                            width=estrella_width,
+                            height=estrella_height
+                        )
 
         output_filename = f"diploma_{nombre}.pptx"
         prs.save(output_filename)
